@@ -61,6 +61,7 @@ public class JobBuilder {
     private JobKey key;
     private String description;
     private Class<? extends Job> jobClass;
+    private Job jobBean;
     private boolean durability;
     private boolean shouldRecover;
     
@@ -68,6 +69,7 @@ public class JobBuilder {
     
     protected JobBuilder() {
     }
+
     
     /**
      * Create a JobBuilder with which to define a <code>JobDetail</code>.
@@ -91,24 +93,43 @@ public class JobBuilder {
     }
 
     /**
+     * Create a JobBuilder with which to define a <code>JobDetail</code>,
+     * and set the class name of the <code>Job</code> to be executed.
+     * @return a new JobBuilder
+     */
+    public static JobBuilder newJob(Job jobBean) {
+        JobBuilder b = new JobBuilder();
+        b.ofBean(jobBean);
+        b.ofType(jobBean.getClass());
+        return b;
+    }
+
+    /**
      * Produce the <code>JobDetail</code> instance defined by this 
      * <code>JobBuilder</code>.
      * 
      * @return the defined JobDetail.
      */
     public JobDetail build() {
-
-        JobDetailImpl job = new JobDetailImpl();
-        
-        job.setJobClass(jobClass);
+        if (jobClass == null && jobBean == null) {
+            throw new IllegalArgumentException("Job class or Job() cannot be null.");
+        }
+      
+	    JobDetailImpl job = new JobDetailImpl();
+        if(jobClass != null){
+            job.setJobClass(jobClass);
+        }
+        if(jobBean != null){
+            job.setJobBean(jobBean);
+        } 
+		 
         job.setDescription(description);
         if(key == null)
             key = new JobKey(Key.createUniqueName(null), null);
         job.setKey(key); 
         job.setDurability(durability);
         job.setRequestsRecovery(shouldRecover);
-        
-        
+
         if(!jobDataMap.isEmpty())
             job.setJobDataMap(jobDataMap);
         
@@ -188,6 +209,11 @@ public class JobBuilder {
      */
     public JobBuilder ofType(Class <? extends Job> jobClazz) {
         this.jobClass = jobClazz;
+        return this;
+    }
+
+    public JobBuilder ofBean(Job jobClazz) {
+        this.jobBean = jobClazz;
         return this;
     }
 

@@ -67,6 +67,7 @@ public interface JobDetail extends Serializable, Cloneable {
      */
     public Class<? extends Job> getJobClass();
 
+    public Job getJobBean();
     /**
      * <p>
      * Get the <code>JobDataMap</code> that is associated with the <code>Job</code>.

@@ -34,23 +34,22 @@ import org.quartz.utils.ClassUtils;
 
 /**
  * <p>
- * Conveys the detail properties of a given <code>Job</code> instance.
+ * 传达给定<code>Job</code>实例的详细属性。
  * </p>
  * 
  * <p>
- * Quartz does not store an actual instance of a <code>Job</code> class, but
- * instead allows you to define an instance of one, through the use of a <code>JobDetail</code>.
+ * Quartz不存储<code>Job</code>类的实际实例，而是允许您通过使用<code>JobDetail</code>定义一个实例。
  * </p>
  * 
  * <p>
- * <code>Job</code>s have a name and group associated with them, which
- * should uniquely identify them within a single <code>{@link Scheduler}</code>.
+ * <code>Job</code>作业有一个与它们相关联的名称和组，
+ * 该名称和组应该在一个单独的<code>{@link Scheduler}</code>中唯一地标识它们。
  * </p>
  * 
  * <p>
- * <code>Trigger</code>s are the 'mechanism' by which <code>Job</code>s
- * are scheduled. Many <code>Trigger</code>s can point to the same <code>Job</code>,
- * but a single <code>Trigger</code> can only point to one <code>Job</code>.
+ * <code>Trigger</code>s是调度<code>Job</code>s的“机制”。
+ * 同一个<code>Job</code>可以拥有多个<code>Trigger</code>s可以指向，
+ * 但是一个<code>Trigger</code>只能指向一个<code>Job</code>。
  * </p>
  * 
  * @see Job
@@ -81,6 +80,7 @@ public class JobDetailImpl implements Cloneable, java.io.Serializable, JobDetail
     private String description;
 
     private Class<? extends Job> jobClass;
+    private Job jobBean;
 
     private JobDataMap jobDataMap;
 
@@ -294,6 +294,10 @@ public class JobDetailImpl implements Cloneable, java.io.Serializable, JobDetail
         return jobClass;
     }
 
+    public Job getJobBean() {
+        return jobBean;
+    }
+
     /**
      * <p>
      * Set the instance of <code>Job</code> that will be executed.
@@ -313,6 +317,15 @@ public class JobDetailImpl implements Cloneable, java.io.Serializable, JobDetail
         }
 
         this.jobClass = jobClass;
+    }
+
+    public void setJobBean(Job jobBean) {
+        if (jobBean == null) {
+            throw new IllegalArgumentException("Job class cannot be null.");
+        }
+
+        this.jobBean = jobBean;
+        this.jobClass = jobBean.getClass();
     }
 
     /* (non-Javadoc)

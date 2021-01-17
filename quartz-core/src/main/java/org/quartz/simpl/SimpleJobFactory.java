@@ -52,8 +52,12 @@ public class SimpleJobFactory implements JobFactory {
                     "Producing instance of Job '" + jobDetail.getKey() + 
                     "', class=" + jobClass.getName());
             }
-            
-            return jobClass.newInstance();
+            if(jobDetail.getJobBean() != null){
+                return jobDetail.getJobBean();
+            }
+            else{
+                return jobClass.newInstance();
+            } 
         } catch (Exception e) {
             SchedulerException se = new SchedulerException(
                     "Problem instantiating class '"
